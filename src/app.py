@@ -1,7 +1,3 @@
-"""
-Copyright (c) Microsoft Corporation. All rights reserved.
-Licensed under the MIT License.
-"""
 from http import HTTPStatus
 
 from aiohttp import web

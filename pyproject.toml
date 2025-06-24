@@ -1,0 +1,11 @@
+[project]
+name = "chat"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "aiohttp>=3.12.13",
+    "python-dotenv>=1.1.1",
+    "teams-ai>=1.6.0,<2.0.0",
+]

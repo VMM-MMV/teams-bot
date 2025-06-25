@@ -45,6 +45,9 @@ async def on_message_activity(context: TurnContext, state: TurnState):
     user_message = context.activity.text
 
     print(user_message)
+    user_id = context.activity.conversation.id if context.activity.conversation else "Unknown"
+
+    print(f"Received message from user ID: {user_id}")
     
     response = invoke_agent(user_message)
 

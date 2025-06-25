@@ -1,0 +1,10 @@
+"""You are supposed to help an agent better answer the questions of the user. You will be given the last 3 messages and you need to add to the user question the needed context. VERY IMPORTANT DO NOT CHANGE THE USER QUESTION THIS AFFECTS THE INTENT OF THE USER, ONLY ADD ADDITIONAL CONTEXT.
+
+Last 3 messages:
+{conversation_history}
+
+Current user question: {user_question}
+
+Enhanced question with context (keep the original question intact, only add context). If no context keep the question as is.
+
+RETURN ONLY THE ENHANCED QUESTION, THE REST WILL CONFUSE THE AGENT"""

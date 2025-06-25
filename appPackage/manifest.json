@@ -4,7 +4,7 @@
     "version": "1.0.0",
     "id": "${{TEAMS_APP_ID}}",
     "developer": {
-        "name": "My App, Inc.",
+        "name": "PGI Procedures Expert",
         "websiteUrl": "https://www.example.com",
         "privacyUrl": "https://www.example.com/privacy",
         "termsOfUseUrl": "https://www.example.com/termofuse"
@@ -14,12 +14,12 @@
         "outline": "outline.png"
     },
     "name": {
-        "short": "qwqwq${{APP_NAME_SUFFIX}}",
-        "full": "full name for qwqwq"
+        "short": "Procedures Expert",
+        "full": "Planet Group Intelligent Procedures Expert"
     },
     "description": {
-        "short": "short description for qwqwq",
-        "full": "full description for qwqwq"
+        "short": "A PGI Procedures Expert",
+        "full": "A Planet Group Intelligent Procedures Expert that helps you with questions about procedures and policies."
     },
     "accentColor": "#FFFFFF",
     "bots": [
@@ -39,12 +39,12 @@
                     ],
                     "commands": [
                         {
-                            "title": "How can you help me?",
-                            "description": "How can you help me?"
+                            "title": "I want to go on vacation what should I do?",
+                            "description": "Answer to the question: I want to go on vacation what should I do?"
                         },
                         {
-                            "title": "How to develop agent for Teams?",
-                            "description": "How can I develop agents with Microsoft 365 Agents Toolkit?"
+                            "title": "How do I contribute to a gitlab project?",
+                            "description": "Answer to the question: How do I contribute to a gitlab project?"
                         }
                     ]
                 }

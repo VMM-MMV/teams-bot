@@ -7,6 +7,7 @@ from botbuilder.core import MemoryStorage, TurnContext
 from teams import Application, ApplicationOptions, TeamsAdapter
 from teams.state import TurnState
 from teams.feedback_loop_data import FeedbackLoopData
+from agent.agent import invoke_agent
 
 from config import Config
 
@@ -38,12 +39,15 @@ async def feedback_loop(_context: TurnContext, _state: TurnState, feedback_loop_
     # Add custom feedback process logic here.
     print(f"Your feedback is:\n{json.dumps(asdict(feedback_loop_data), indent=4)}")
 
-
 @bot_app.activity("message")
 async def on_message_activity(context: TurnContext, state: TurnState):
     """Handle incoming messages and echo them back"""
     user_message = context.activity.text
-    print(f"User message: {user_message}")
+
+    print(user_message)
     
-    # Echo the message back
-    await context.send_activity(f"Echo: {user_message}")
+    response = invoke_agent(user_message)
+
+    print(response)
+
+    await context.send_activity(response)

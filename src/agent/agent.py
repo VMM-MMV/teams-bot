@@ -8,7 +8,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough, RunnableLambda
 from langchain_groq import ChatGroq
 from langchain_google_genai import ChatGoogleGenerativeAI
-from agent.utils.context_manager import load_procedures
+from agent.utils.context_manager import load_procedures, get_procedures_metadata
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -18,7 +18,6 @@ class AgentChain:
             model_name="meta-llama/llama-4-scout-17b-16e-instruct",
             temperature=0.1
         )
-        print(os.environ["GROQ_API_KEY"], os.environ["GOOGLE_API_KEY"])
         
         self.google_model = ChatGoogleGenerativeAI(
             model="gemini-2.5-flash-lite-preview-06-17",
@@ -40,15 +39,21 @@ class AgentChain:
             template=template
         )
 
-        self.context = load_procedures("/procedures")
-        
+        self.context = load_procedures("procedures")
+
         self.chain = self._create_chain()
 
     def debug(self, obj: str):
         """Debugging utility to print messages"""
-        print(f"DEBUG: {obj}")
+        print(f"DEBUG: {obj}. \n\nDebugging is enabled.\n\n")
         return obj
     
+    def add_links(self, response: str) -> str:
+        metadata = get_procedures_metadata()
+        for name, url in metadata.items():
+            response = response.replace(name.strip(), f"[{name}]({url})")
+        return response
+
     def _create_chain(self):
         """Create the async chain"""
         
@@ -62,14 +67,16 @@ class AgentChain:
         
         # Step 2: Get final answer using Google Generative AI
         answer_chain = (
-            {"query": RunnablePassthrough(), "context": RunnableLambda(lambda _: self.context)}
+            {"query": RunnablePassthrough(), "context": RunnableLambda(lambda _: self.context), "conversation_history": RunnablePassthrough()}
             | self.answer_prompt
             | self.google_model
             | StrOutputParser()
+            | RunnableLambda(lambda x: self.add_links(x))
         )
         
         # Combine both steps
-        full_chain = context_enhancement_chain | answer_chain
+        # full_chain = context_enhancement_chain | answer_chain
+        full_chain = answer_chain
         
         return full_chain
     

@@ -7,7 +7,7 @@ from botbuilder.core import MemoryStorage, TurnContext
 from teams import Application, ApplicationOptions, TeamsAdapter
 from teams.state import TurnState
 from teams.feedback_loop_data import FeedbackLoopData
-from agent.agent import invoke_agent
+from agent_service import invoke_agent
 
 from config import Config
 
@@ -45,11 +45,15 @@ async def on_message_activity(context: TurnContext, state: TurnState):
     user_message = context.activity.text
 
     print(user_message)
-    user_id = context.activity.conversation.id if context.activity.conversation else "Unknown"
+    user_id = context.activity.conversation.id if context.activity.conversation else None
+    if not user_id:
+        print("No user ID found in the conversation.")
+        await context.send_activity("No user ID found in the conversation.")
+        return
 
     print(f"Received message from user ID: {user_id}")
-    
-    response = invoke_agent(user_message)
+
+    response = await invoke_agent(user_id, user_message)
 
     print(response)
 

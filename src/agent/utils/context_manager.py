@@ -2,7 +2,7 @@ from agent.utils.io_manager import read_files
 import json
 from pathlib import Path
 
-DIR_PATH = Path("/home/serveruser/mcp-sse/procedures")
+DIR_PATH = Path("procedures")
 METADATA_NAME = "procedures_metadata"
 METADATA_DIR = DIR_PATH / f"{METADATA_NAME}.json"
 

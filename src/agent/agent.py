@@ -42,6 +42,7 @@ knowledge_base_prompt = ChatPromptTemplate.from_template(
 )
 
 context = load_procedures("procedures")
+print(context[:1000])  # Print first 1000 characters for debugging
 tool_chain = knowledge_base_prompt | tool_model | StrOutputParser()
 
 @tool
@@ -63,20 +64,19 @@ def extract_final_answer(result: dict) -> str:
             return message.content
     raise ValueError("No AIMessage found in messages.")
 
-main_chain = base_prompt | agent_executor | RunnableLambda(extract_final_answer) | StrOutputParser()
-
 def add_links(response: str) -> str:
     metadata = get_procedures_metadata()
     for name, url in metadata.items():
         response = response.replace(name.strip(), f"[{name}]({url})")
     return response
 
+main_chain = base_prompt | agent_executor | RunnableLambda(extract_final_answer) | StrOutputParser() | RunnableLambda(add_links)
+
 async def ainvoke(query: str, user_messages: List[str]):
-    res = await main_chain.ainvoke({
+    return await main_chain.ainvoke({
         "query": query,
         "conversation_history": user_messages,
     })
-    return add_links(res)
 
 if __name__ == "__main__":
     import asyncio

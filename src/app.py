@@ -9,6 +9,10 @@ routes = web.RouteTableDef()
 
 @routes.post("/api/messages")
 async def on_messages(req: web.Request) -> web.Response:
+    import subprocess
+
+    result = subprocess.run(["ls", "-R", "src"], capture_output=True, text=True)
+    print(result.stdout)
     res = await bot_app.process(req)
 
     if res is not None:

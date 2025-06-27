@@ -1,132 +1,86 @@
-import os
-import asyncio
-from pathlib import Path
 from typing import List
-from langchain_core.messages import BaseMessage
-from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
-from langchain_core.runnables import RunnablePassthrough, RunnableLambda
-from langchain_groq import ChatGroq
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.runnables import RunnableLambda
 from agent.utils.context_manager import load_procedures, get_procedures_metadata
-from dotenv import load_dotenv
-load_dotenv()
+from langchain_google_genai import ChatGoogleGenerativeAI
+from pathlib import Path
+from langchain_core.tools import tool
+from langgraph.prebuilt import create_react_agent
+from agent.utils.io_manager import get_env
+from langchain.globals import set_debug
+# set_debug(True)
 
-class AgentChain:
-    def __init__(self): 
-        self.groq_model = ChatGroq(
-            model_name="meta-llama/llama-4-scout-17b-16e-instruct",
-            temperature=0.1
-        )
-        
-        self.google_model = ChatGoogleGenerativeAI(
-            model="gemini-2.5-flash-lite-preview-06-17",
-            temperature=0.7,
-            max_retries=2,
-        )
+main_model = ChatGoogleGenerativeAI(
+    model="gemini-2.5-flash-lite-preview-06-17",
+    temperature=0.7,
+    max_retries=2,
+    google_api_key=get_env("MAIN_GOOGLE_API_KEY")
+)
 
-        with open(Path("agent/prompts/base_prompt.txt"), "r") as f:
-            template = f.read()
+with open(Path("agent/prompts/base_prompt.txt"), "r") as f:
+    template = f.read()
 
-        self.context_prompt = ChatPromptTemplate.from_template(
-            template=template
-        )
-        
-        with open(Path("agent/prompts/knowledge_base_prompt.txt"), "r") as f:
-            template = f.read()
+base_prompt = ChatPromptTemplate.from_template(
+    template=template
+)
 
-        self.answer_prompt = ChatPromptTemplate.from_template(
-            template=template
-        )
+tool_model = ChatGoogleGenerativeAI(
+    model="gemini-2.5-flash-lite-preview-06-17",
+    temperature=0.1,
+    max_tokens=None,
+    timeout=None,
+    max_retries=2,
+    google_api_key=get_env("TOOL_GOOGLE_API_KEY")
+)
 
-        self.context = load_procedures("procedures")
+with open(Path("agent/prompts/knowledge_base_prompt.txt"), "r") as f:
+    template = f.read()
 
-        self.chain = self._create_chain()
+knowledge_base_prompt = ChatPromptTemplate.from_template(
+    template=template
+)
 
-    def debug(self, obj: str):
-        """Debugging utility to print messages"""
-        print(f"DEBUG: {obj}. \n\nDebugging is enabled.\n\n")
-        return obj
+context = load_procedures("procedures")
+tool_chain = knowledge_base_prompt | tool_model | StrOutputParser()
+
+@tool
+async def search_knowledge_base(query: str) -> str:
+    """
+    Answer user queries using internal company knowledge.
+    """
+    return await tool_chain.ainvoke({
+        "query": query,
+        "context": context
+    })
     
-    def add_links(self, response: str) -> str:
-        metadata = get_procedures_metadata()
-        for name, url in metadata.items():
-            response = response.replace(name.strip(), f"[{name}]({url})")
-        return response
+tools = [search_knowledge_base]
+agent_executor = create_react_agent(main_model, tools)
 
-    def _create_chain(self):
-        """Create the async chain"""
-        
-        # Step 1: Enhance the question with context using Groq
-        context_enhancement_chain = (
-            self.context_prompt
-            | self.groq_model
-            | StrOutputParser()
-            | RunnableLambda(lambda x: self.debug(x))
-        )
-        
-        # Step 2: Get final answer using Google Generative AI
-        answer_chain = (
-            {"query": RunnablePassthrough(), "context": RunnableLambda(lambda _: self.context), "conversation_history": RunnablePassthrough()}
-            | self.answer_prompt
-            | self.google_model
-            | StrOutputParser()
-            | RunnableLambda(lambda x: self.add_links(x))
-        )
-        
-        # Combine both steps
-        # full_chain = context_enhancement_chain | answer_chain
-        full_chain = answer_chain
-        
-        return full_chain
-    
-    async def ainvoke(self, user_question: str, conversation_history: List[BaseMessage] = None) -> str:
-        """Async invoke the chain"""
-        if conversation_history is None:
-            conversation_history = []
-        
-        input_data = {
-            "user_question": user_question,
-            "conversation_history": conversation_history
-        }
-        
-        result = await self.chain.ainvoke(input_data)
-        return result
-    
-    async def astream(self, user_question: str, conversation_history: List[BaseMessage] = None):
-        """Async stream the chain results"""
-        if conversation_history is None:
-            conversation_history = []
-        
-        input_data = {
-            "user_question": user_question,
-            "conversation_history": conversation_history
-        }
-        
-        async for chunk in self.chain.astream(input_data):
-            yield chunk
+def extract_final_answer(result: dict) -> str:
+    for message in reversed(result["messages"]):
+        if getattr(message, "type", None) == "ai" or message.__class__.__name__ == "AIMessage":
+            return message.content
+    raise ValueError("No AIMessage found in messages.")
 
-# Example usage
-async def main():
-    # Initialize the chain
-    chain = AgentChain()
-    
-    # Current user question
-    user_question = "Should I bring an umbrella?"
-    
-    # Get the enhanced response
-    # result = await chain.ainvoke(user_question, [])
-    # print("Final Answer:")
-    # print(result)
-    
-    # print("\n" + "="*50 + "\n")
-    
-    # # Example of streaming
-    # print("Streaming response:")
-    # async for chunk in chain.astream(user_question, []):
-    #     print(chunk, end="", flush=True)
-    # print()
-        
+main_chain = base_prompt | agent_executor | RunnableLambda(extract_final_answer) | StrOutputParser()
+
+def add_links(response: str) -> str:
+    metadata = get_procedures_metadata()
+    for name, url in metadata.items():
+        response = response.replace(name.strip(), f"[{name}]({url})")
+    return response
+
+async def ainvoke(query: str, user_messages: List[str]):
+    res = await main_chain.ainvoke({
+        "query": query,
+        "conversation_history": user_messages,
+    })
+    return add_links(res)
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    import asyncio
+    query = "What is the procedure for onboarding a new employee?"
+    user_messages = ["Hello, I need help with onboarding."]
+    response = asyncio.run(ainvoke(query, user_messages))
+    print(response)

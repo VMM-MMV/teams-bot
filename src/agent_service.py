@@ -1,5 +1,5 @@
 import os
-import agent.ag as agent
+import src.agent.agent as agent
 from db import AsyncChatStore
 
 async def invoke_agent(user_id: str, question: str):

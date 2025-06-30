@@ -1,3 +1,6 @@
+app:
+  port: 3978
+
 db:
   name: chat_db
   reset_on_start: False

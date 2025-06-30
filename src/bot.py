@@ -2,14 +2,22 @@ import sys
 import json
 import traceback
 from dataclasses import asdict
-
 from botbuilder.core import MemoryStorage, TurnContext
 from teams import Application, ApplicationOptions, TeamsAdapter
 from teams.state import TurnState
 from teams.feedback_loop_data import FeedbackLoopData
 from agent_service import invoke_agent
 
-from config import Config
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+class Config:
+    APP_ID = os.environ.get("BOT_ID", "")
+    APP_PASSWORD = os.environ.get("BOT_PASSWORD", "")
+    APP_TYPE = os.environ.get("BOT_TYPE", "")
+    APP_TENANTID = os.environ.get("BOT_TENANT_ID", "")
 
 config = Config()
 

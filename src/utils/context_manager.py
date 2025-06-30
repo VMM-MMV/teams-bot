@@ -1,4 +1,4 @@
-from agent.utils.io_manager import read_files
+from utils.io_manager import read_files
 import json
 from pathlib import Path
 

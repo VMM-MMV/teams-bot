@@ -1,5 +1,5 @@
 from dynaconf import Dynaconf
-from agent.utils.io_manager import get_env
+from utils.io_manager import get_env
 
 env = get_env("DYNACONF_PROFILE")
 

@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import List, Dict, Optional
 from dataclasses import dataclass
 from contextlib import asynccontextmanager
-from agent.utils.config import config
+from utils.config import config
 
 @dataclass
 class ChatMessage:

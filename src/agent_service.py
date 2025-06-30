@@ -1,7 +1,7 @@
 import os
-import agent.agent as agent
+import agent as agent
 from db import AsyncChatStore
-from agent.utils.config import config
+from utils.config import config
 
 async def invoke_agent(user_id: str, question: str):
     os.makedirs("db", exist_ok=True)

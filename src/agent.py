@@ -2,12 +2,12 @@ from typing import List
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnableLambda
-from agent.utils.context_manager import load_procedures, get_procedures_metadata
+from utils.context_manager import load_procedures, get_procedures_metadata
 from langchain_google_genai import ChatGoogleGenerativeAI
 from pathlib import Path
 from langchain_core.tools import tool
 from langgraph.prebuilt import create_react_agent
-from agent.utils.io_manager import get_env
+from utils.io_manager import get_env
 from langchain.globals import set_debug
 # set_debug(True)
 
@@ -18,7 +18,7 @@ main_model = ChatGoogleGenerativeAI(
     google_api_key=get_env("MAIN_GOOGLE_API_KEY")
 )
 
-with open(Path("agent/prompts/base_prompt.txt"), "r") as f:
+with open(Path("resources/prompts/base_prompt.txt"), "r") as f:
     template = f.read()
 
 base_prompt = ChatPromptTemplate.from_template(
@@ -34,7 +34,7 @@ tool_model = ChatGoogleGenerativeAI(
     google_api_key=get_env("TOOL_GOOGLE_API_KEY")
 )
 
-with open(Path("agent/prompts/knowledge_base_prompt.txt"), "r") as f:
+with open(Path("resources/prompts/knowledge_base_prompt.txt"), "r") as f:
     template = f.read()
 
 knowledge_base_prompt = ChatPromptTemplate.from_template(

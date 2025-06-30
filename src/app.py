@@ -1,18 +1,13 @@
 from http import HTTPStatus
-
 from aiohttp import web
 from botbuilder.core.integration import aiohttp_error_middleware
-
 from bot import bot_app
+from utils.config import config
 
 routes = web.RouteTableDef()
 
 @routes.post("/api/messages")
 async def on_messages(req: web.Request) -> web.Response:
-    import subprocess
-
-    result = subprocess.run(["ls", "-R", "src"], capture_output=True, text=True)
-    print(result.stdout)
     res = await bot_app.process(req)
 
     if res is not None:
@@ -23,7 +18,5 @@ async def on_messages(req: web.Request) -> web.Response:
 app = web.Application(middlewares=[aiohttp_error_middleware])
 app.add_routes(routes)
 
-from config import Config
-
 if __name__ == "__main__":
-    web.run_app(app, host="localhost", port=Config.PORT)
+    web.run_app(app, host="localhost", port=config.app.port)

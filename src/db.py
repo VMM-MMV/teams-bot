@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import List, Dict, Optional
 from dataclasses import dataclass
 from contextlib import asynccontextmanager
-
+from agent.utils.config import config
 
 @dataclass
 class ChatMessage:
@@ -49,6 +49,10 @@ class AsyncChatStore:
             CREATE INDEX IF NOT EXISTS idx_user_timestamp 
             ON chat_messages(user_id, timestamp DESC)
         """)
+
+        if config.db.reset_on_start:
+            await self._db.execute("DELETE FROM chat_messages")
+
         await self._db.commit()
     
     async def __close(self):

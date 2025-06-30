@@ -9,11 +9,11 @@ from langchain_core.tools import tool
 from langgraph.prebuilt import create_react_agent
 from utils.io_manager import get_env
 from langchain.globals import set_debug
-# set_debug(True)
+set_debug(True)
 
 main_model = ChatGoogleGenerativeAI(
     model="gemini-2.5-flash-lite-preview-06-17",
-    temperature=0.7,
+    temperature=0.1,
     max_retries=2,
     google_api_key=get_env("MAIN_GOOGLE_API_KEY")
 )
@@ -42,7 +42,7 @@ knowledge_base_prompt = ChatPromptTemplate.from_template(
 )
 
 context = load_procedures("procedures")
-print(context[:1000])  # Print first 1000 characters for debugging
+logger.info(context[:100])  # Print first 1000 characters for debugging
 tool_chain = knowledge_base_prompt | tool_model | StrOutputParser()
 
 @tool

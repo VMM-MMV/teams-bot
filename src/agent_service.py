@@ -6,7 +6,7 @@ from utils.config import config
 async def invoke_agent(user_id: str, question: str):
     os.makedirs("db", exist_ok=True)
 
-    async with AsyncChatStore(f"db/{config.db.name}.db") as store:
+    async with AsyncChatStore(f"db/{config.db.file}.db") as store:
         user_messages = [x.message for x in await store.get_messages(user_id)]
 
         result = await agent.ainvoke(question, user_messages)

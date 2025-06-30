@@ -2,5 +2,8 @@ app:
   port: 3978
 
 db:
-  name: chat_db
+  file: chat_db
   reset_on_start: False
+
+log: 
+  file: app

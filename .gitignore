@@ -11,4 +11,5 @@ wheels/
 .env
 src/procedures
 db
+logs
 .deployment

@@ -26,10 +26,10 @@ You will be given the current query and the last 5 messages for context.
 2. Use in-text citation markers [1], [2], etc, after statements to indicate which source provided that specific information.
 
 3. End your response with a "References" section that clearly lists the document IDs, titles, or other identifiers where the information was found. Format this section at the end as:
-   ###### References:
-      - [1] HR-POL-2024-03
-      - [2] Employee Handbook v7.2"
-      etc.
+**References:**
+   [1] Document ID/Title
+   [2] Document ID/Title
+   etc.
 
 ## Examples:
 
@@ -39,9 +39,9 @@ You will be given the current query and the last 5 messages for context.
 ### Excellent Response:
 "Full-time employees accrue vacation at 1.5 days per month (18 days annually) [1], with a maximum accrual cap of 30 days [1]. Unused vacation rolls over each year until the cap is reached [2]. New employees begin accruing immediately but cannot use vacation time until after their 90-day probationary period [1]. Vacation requests must be submitted through the WorkDay portal at least 2 weeks in advance for periods longer than 3 days [2].
 
-###### References:
-   - [1] HR-POL-2024-03
-   - [2] Employee Handbook v7.2"
+**References:**
+   [1] HR-POL-2024-03
+   [2] Employee Handbook v7.2"
 
 Remember: Your value lies in delivering precisely what is needed without extraneous information.
 

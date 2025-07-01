@@ -50,9 +50,6 @@ class AsyncChatStore:
             ON chat_messages(user_id, timestamp DESC)
         """)
 
-        if config.db.reset_on_start:
-            await self._db.execute("DELETE FROM chat_messages")
-
         await self._db.commit()
     
     async def __close(self):

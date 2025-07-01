@@ -7,7 +7,7 @@ from botbuilder.core import MemoryStorage, TurnContext
 from teams import Application, ApplicationOptions, TeamsAdapter
 from teams.state import TurnState
 from teams.feedback_loop_data import FeedbackLoopData
-from agent_service import invoke_agent
+from agent_service import invoke_agent, new_session
 from utils.logger import logger
 
 import os
@@ -65,6 +65,10 @@ async def on_message_activity(context: TurnContext, state: TurnState):
 
     logger.info(f"Received message from user ID: {clean_uuid}")
 
-    response = await invoke_agent(clean_uuid, user_message)
-
-    await context.send_activity(response)
+    match user_message:
+        case "/new_session":
+            await new_session(clean_uuid)
+            await context.send_activity("New Session started. Chat history cleared.")
+        case _:
+            response = await invoke_agent(clean_uuid, user_message)
+            await context.send_activity(response)

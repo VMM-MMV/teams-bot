@@ -45,6 +45,10 @@
                         {
                             "title": "How do I contribute to a gitlab project?",
                             "description": "Answer to the question: How do I contribute to a gitlab project?"
+                        },
+                        {
+                            "title": "/new_session",
+                            "description": "Start a new session with the bot. This will clear the chat history and start fresh."
                         }
                     ]
                 }

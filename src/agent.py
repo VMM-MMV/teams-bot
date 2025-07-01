@@ -9,7 +9,8 @@ from langchain_core.tools import tool
 from langgraph.prebuilt import create_react_agent
 from utils.io_manager import get_env
 from langchain.globals import set_debug
-set_debug(True)
+from utils.logger import logger
+# set_debug(True)
 
 main_model = ChatGoogleGenerativeAI(
     model="gemini-2.5-flash-lite-preview-06-17",
@@ -42,7 +43,6 @@ knowledge_base_prompt = ChatPromptTemplate.from_template(
 )
 
 context = load_procedures("procedures")
-logger.info(context[:100])  # Print first 1000 characters for debugging
 tool_chain = knowledge_base_prompt | tool_model | StrOutputParser()
 
 @tool
@@ -50,6 +50,8 @@ async def search_knowledge_base(query: str) -> str:
     """
     Answer user queries using internal company knowledge.
     """
+    logger.info(f"Searching knowledge base for query: {query}")
+    logger.info(f"Context length: {len(context)} characters")
     return await tool_chain.ainvoke({
         "query": query,
         "context": context

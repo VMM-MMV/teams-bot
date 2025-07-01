@@ -1,3 +1,4 @@
+import re
 import sys
 import json
 import traceback
@@ -7,6 +8,7 @@ from teams import Application, ApplicationOptions, TeamsAdapter
 from teams.state import TurnState
 from teams.feedback_loop_data import FeedbackLoopData
 from agent_service import invoke_agent
+from utils.logger import logger
 
 import os
 from dotenv import load_dotenv
@@ -58,11 +60,11 @@ async def on_message_activity(context: TurnContext, state: TurnState):
         print("No user ID found in the conversation.")
         await context.send_activity("No user ID found in the conversation.")
         return
+    
+    clean_uuid = re.sub(r'[^a-zA-Z0-9]', '', user_id)
 
-    print(f"Received message from user ID: {user_id}")
+    logger.info(f"Received message from user ID: {clean_uuid}")
 
-    response = await invoke_agent(user_id, user_message)
-
-    print(response)
+    response = await invoke_agent(clean_uuid, user_message)
 
     await context.send_activity(response)

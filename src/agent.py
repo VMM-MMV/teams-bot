@@ -21,6 +21,7 @@ main_model = ChatGoogleGenerativeAI(
 
 with open(Path("resources/prompts/base_prompt.txt"), "r") as f:
     template = f.read()
+template = get_env("AGENT_PROMPT", default=template)
 
 base_prompt = ChatPromptTemplate.from_template(
     template=template
@@ -37,6 +38,7 @@ tool_model = ChatGoogleGenerativeAI(
 
 with open(Path("resources/prompts/knowledge_base_prompt.txt"), "r") as f:
     template = f.read()
+template = get_env("KNOWLEDGE_BASE_PROMPT", default=template)
 
 knowledge_base_prompt = ChatPromptTemplate.from_template(
     template=template

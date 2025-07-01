@@ -1,9 +1,9 @@
 import os
 from dotenv import load_dotenv
 
-def get_env(env_name):
+def get_env(env_name, default=None):
     load_dotenv()
-    return os.environ.get(env_name)
+    return os.environ.get(env_name, default)
 
 def list_files(dir_path):
     for root, dirs, files in os.walk(dir_path):

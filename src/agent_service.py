@@ -1,18 +1,16 @@
 import os
 import agent as agent
-from db import AsyncChatStore
-from utils.config import config
+from store import shared_store
 
 async def invoke_agent(user_id: str, question: str):
     os.makedirs("db", exist_ok=True)
 
-    async with AsyncChatStore(f"db/{config.db.file}.db") as store:
-        user_messages = [x.message for x in await store.get_messages(user_id)]
+    user_messages = [x.message for x in await shared_store.get_messages(user_id)][::-1]
 
-        result = await agent.ainvoke(question, user_messages)
+    result = await agent.ainvoke(question, user_messages)
 
-        async with store.transaction() as transaction:
-            await transaction.add_message(user_id, "User: " + question)
-            await transaction.add_message(user_id, "Agent:" + result)
+    async with shared_store.transaction() as transaction:
+        await transaction.add_message(user_id, "User: " + question)
+        await transaction.add_message(user_id, "Agent:" + result)
 
     return result

@@ -12,6 +12,7 @@ dependencies = [
     "langchain-google-genai>=2.1.5",
     "langchain-groq>=0.3.4",
     "langgraph>=0.4.10",
+    "loguru>=0.7.3",
     "python-dotenv>=1.1.1",
     "teams-ai>=1.6.0,<2.0.0",
 ]

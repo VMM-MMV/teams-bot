@@ -8,7 +8,7 @@ provision:
   - uses: teamsApp/create
     with:
       # app name
-      name: Procedures Expert
+      name: PGI PolyProcedures 
     # Write the information of created resources into environment file for
     # the specified environment variable(s).
     writeToEnvironmentFile: 
@@ -18,7 +18,7 @@ provision:
   - uses: aadApp/create
     with:
       # The Microsoft Entra application's display name
-      name: Procedures Expert
+      name: PGI PolyProcedures 
       generateClientSecret: true
       signInAudience: AzureADMultipleOrgs
     writeToEnvironmentFile:
@@ -33,7 +33,7 @@ provision:
   - uses: botFramework/create
     with:
       botId: ${{BOT_ID}}
-      name: Procedures Expert
+      name: PGI PolyProcedures 
       messagingEndpoint: ${{BOT_ENDPOINT}}/api/messages
       description: ""
       channels:

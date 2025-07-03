@@ -1,10 +1,10 @@
 {
     "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.21/MicrosoftTeams.schema.json",
     "manifestVersion": "1.21",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "id": "${{TEAMS_APP_ID}}",
     "developer": {
-        "name": "PGI Procedures Expert",
+        "name": "PGI PGI PolyProcedures ",
         "websiteUrl": "https://www.example.com",
         "privacyUrl": "https://www.example.com/privacy",
         "termsOfUseUrl": "https://www.example.com/termofuse"
@@ -14,12 +14,12 @@
         "outline": "outline.png"
     },
     "name": {
-        "short": "Procedures Expert",
-        "full": "Planet Group Intelligent Procedures Expert"
+        "short": "PGI PolyProcedures ",
+        "full": "Planet Group Intelligent PGI PolyProcedures "
     },
     "description": {
-        "short": "A PGI Procedures Expert",
-        "full": "A Planet Group Intelligent Procedures Expert that helps you with questions about procedures and policies."
+        "short": "A PGI PGI PolyProcedures ",
+        "full": "A Planet Group Intelligent PGI PolyProcedures  that helps you with questions about procedures and policies."
     },
     "accentColor": "#FFFFFF",
     "bots": [

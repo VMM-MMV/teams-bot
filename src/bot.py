@@ -9,6 +9,7 @@ from teams.state import TurnState
 from teams.feedback_loop_data import FeedbackLoopData
 from agent_service import invoke_agent, new_session
 from utils.logger import logger
+from botbuilder.schema import Activity, Attachment, ActivityTypes
 
 import os
 from dotenv import load_dotenv
@@ -49,9 +50,55 @@ async def feedback_loop(_context: TurnContext, _state: TurnState, feedback_loop_
     # Add custom feedback process logic here.
     print(f"Your feedback is:\n{json.dumps(asdict(feedback_loop_data), indent=4)}")
 
+async def create_feedback_card(user_message: str, response: str) -> Activity:
+    return Activity(
+                type=ActivityTypes.message,
+                attachments=[
+                    Attachment(
+                        content_type="application/vnd.microsoft.card.adaptive",
+                        content={
+                            "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                            "type": "AdaptiveCard",
+                            "version": "1.4",
+                            "body": [
+                                {
+                                    "type": "TextBlock",
+                                    "text": "Was this answer helpful? Please provide feedback so we can improve the agent.",
+                                    "wrap": True
+                                }
+                            ],
+                            "actions": [
+                                {
+                                    "type": "Action.Submit",
+                                    "title": "👍 Yes",
+                                    "data": {
+                                        "feedback": "thumbs_up",
+                                        "originalQuestion": user_message,
+                                        "agentResponse": response
+                                    }
+                                },
+                                {
+                                    "type": "Action.Submit",
+                                    "title": "👎 No",
+                                    "data": {
+                                        "feedback": "thumbs_down",
+                                        "originalQuestion": user_message,
+                                        "agentResponse": response
+                                    }
+                                }
+                            ]
+                        }
+                    )
+                ]
+            )   
+
+
 @bot_app.activity("message")
 async def on_message_activity(context: TurnContext, state: TurnState):
     """Handle incoming messages and echo them back"""
+    if context.activity.value and isinstance(context.activity.value, dict) and "feedback" in context.activity.value:
+        logger.info("🔁 Skipping feedback message in message activity handler.")
+        return
     user_message = context.activity.text
 
     print(user_message)
@@ -72,3 +119,6 @@ async def on_message_activity(context: TurnContext, state: TurnState):
         case _:
             response = await invoke_agent(clean_uuid, user_message)
             await context.send_activity(response)
+
+            feedback_card = await create_feedback_card(user_message, response)
+            await context.send_activity(feedback_card)

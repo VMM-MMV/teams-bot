@@ -9,3 +9,6 @@ config = Dynaconf(
         f"resources/config.{env}.yaml"
     ]
 )
+
+if __name__ == "__main__":
+    print(env, config.app)

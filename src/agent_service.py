@@ -3,7 +3,7 @@ import agent as agent
 from db import AsyncChatStore
 from utils.config import config
 
-DB_DIR = Path("/home/db")
+DB_DIR = Path(config.app.dir) / "db"
 DB_DIR.mkdir(parents=True, exist_ok=True)
 CONNECTION_STRING = str(DB_DIR / f"{config.db.file}.sqlite")
 
@@ -26,3 +26,6 @@ async def new_session(user_id: str):
 
     async with AsyncChatStore(CONNECTION_STRING) as store:
         return await store.delete_all_messages(user_id)
+    
+if __name__ == "__main__":
+    print(DB_DIR)

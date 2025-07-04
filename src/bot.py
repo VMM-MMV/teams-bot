@@ -11,6 +11,7 @@ from agent_service import invoke_agent, new_session
 from utils.logger import logger
 from botbuilder.schema import Activity, Attachment, ActivityTypes
 from datetime import datetime
+from utils.config import config
 
 import os
 from dotenv import load_dotenv
@@ -97,7 +98,7 @@ async def save_feedback(feedback_data: dict, feedback_type: str):
     """Save feedback data to a file with a timestamp, organized by feedback type."""
     # Directory based on feedback type
     # directory = os.path.join("..", "feedback", feedback_type)
-    directory = os.path.join("/home", "feedback", feedback_type)
+    directory = os.path.join(config.app.path, "feedback", feedback_type)
     os.makedirs(directory, exist_ok=True)
 
     # Create timestamp-based filename

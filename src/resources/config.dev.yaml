@@ -1,3 +1,7 @@
+app:
+  dir: .
+  port: 3978
+
 db:
   file: dev_db
   reset_on_start: True

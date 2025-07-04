@@ -4,7 +4,6 @@ from datetime import datetime
 from typing import List, Dict, Optional
 from dataclasses import dataclass
 from contextlib import asynccontextmanager
-from utils.config import config
 
 @dataclass
 class ChatMessage:

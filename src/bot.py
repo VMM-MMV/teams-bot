@@ -10,6 +10,7 @@ from teams.feedback_loop_data import FeedbackLoopData
 from agent_service import invoke_agent, new_session
 from utils.logger import logger
 from botbuilder.schema import Activity, Attachment, ActivityTypes
+from datetime import datetime
 
 import os
 from dotenv import load_dotenv
@@ -92,12 +93,37 @@ async def create_feedback_card(user_message: str, response: str) -> Activity:
                 ]
             )   
 
+async def save_feedback(feedback_data: dict, feedback_type: str):
+    """Save feedback data to a file with a timestamp, organized by feedback type."""
+    # Directory based on feedback type
+    # directory = os.path.join("..", "feedback", feedback_type)
+    directory = os.path.join("/home", "feedback", feedback_type)
+    os.makedirs(directory, exist_ok=True)
+
+    # Create timestamp-based filename
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"{timestamp}.json"
+
+    # Full path to the file
+    filepath = os.path.join(directory, filename)
+
+    # Write feedback data to the file
+    with open(filepath, "w") as file:
+        json.dump(feedback_data, file, indent=4)
+
+    logger.info(f"Feedback saved to {filepath}")
 
 @bot_app.activity("message")
 async def on_message_activity(context: TurnContext, state: TurnState):
     """Handle incoming messages and echo them back"""
-    if context.activity.value and isinstance(context.activity.value, dict) and "feedback" in context.activity.value:
-        logger.info("🔁 Skipping feedback message in message activity handler.")
+    activity_value = context.activity.value
+    is_feedback_message = activity_value and isinstance(activity_value, dict) and "feedback" in activity_value
+    if is_feedback_message:
+        match activity_value["feedback"]:
+            case "thumbs_up":
+                await save_feedback(activity_value, "positive")
+            case "thumbs_down":
+                await save_feedback(activity_value, "negative")
         return
     user_message = context.activity.text
 

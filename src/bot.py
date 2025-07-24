@@ -120,6 +120,7 @@ async def on_message_activity(context: TurnContext, state: TurnState):
     activity_value = context.activity.value
     is_feedback_message = activity_value and isinstance(activity_value, dict) and "feedback" in activity_value
     if is_feedback_message:
+        print(f"Received feedback: {activity_value['feedback']}")
         match activity_value["feedback"]:
             case "thumbs_up":
                 await save_feedback(activity_value, "positive")
@@ -128,7 +129,7 @@ async def on_message_activity(context: TurnContext, state: TurnState):
         return
     user_message = context.activity.text
 
-    print(user_message)
+    print("User Message:", user_message)
     user_id = context.activity.conversation.id if context.activity.conversation else None
     if not user_id:
         print("No user ID found in the conversation.")

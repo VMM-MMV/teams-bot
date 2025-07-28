@@ -97,7 +97,6 @@ async def create_feedback_card(user_message: str, response: str) -> Activity:
 async def save_feedback(feedback_data: dict, feedback_type: str):
     """Save feedback data to a file with a timestamp, organized by feedback type."""
     # Directory based on feedback type
-    # directory = os.path.join("..", "feedback", feedback_type)
     directory = os.path.join(config.app.path, "feedback", feedback_type)
     os.makedirs(directory, exist_ok=True)
 

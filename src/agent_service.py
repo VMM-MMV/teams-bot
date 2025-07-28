@@ -25,7 +25,10 @@ async def new_session(user_id: str):
     DB_DIR.mkdir(parents=True, exist_ok=True)
 
     async with AsyncChatStore(CONNECTION_STRING) as store:
-        return await store.delete_all_messages(user_id)
+        async with store.transaction() as transaction:
+            res = await transaction.delete_all_messages(user_id)
+            print(f"Deleted {res} messages for user {user_id}")
+            return res
     
 if __name__ == "__main__":
     print(DB_DIR)
